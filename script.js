@@ -22,6 +22,16 @@ function preload() {
   charImage = loadImage("assets/character/char_blue.png");
 }
 
+
+function rectangularCollision(rec1, rec2) {
+  return (
+    rec1.pos.x + rec1.w >= rec2.pos.x &&
+    rec1.pos.x <= rec2.pos.x + rec1.w &&
+    rec1.pos.y <= rec2.pos.y + rec1.h &&
+    rec1.pos.y + rec1.h >= rec2.pos.y
+  );
+}
+
 function collided(rect1, rect2) {
   return collideRectRect(
     rect1.pos.x,
@@ -39,7 +49,7 @@ function detectCollisions(player, boundary) {
   return (
     player.pos.y + player.h < boundary.pos.y &&
     player.pos.y + player.h + player.vel.y >= boundary.pos.y && 
-    player.pos.x + player.w >= boundary.pos.x && collided(player, boundary)
+    player.pos.x + player.w >= boundary.pos.x 
   )
 }
 
