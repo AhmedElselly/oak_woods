@@ -7,7 +7,6 @@ class Player {
     this.x = 0;
     this.y = 0;
     this.vy = 0;
-    this.pos = createVector(this.x + 100, this.y);
     this.minFrame = 0;
     this.maxFrame = 22;
     this.frameX = 0;
@@ -21,6 +20,9 @@ class Player {
     this.gravity = createVector(0, 1);
     this.acc = createVector(0, 0);
     this.spriteAnimations = [];
+    this.body = Bodies.rectangle(this.x+100, this.y, this.w, this.h);
+    World.add(world, this.body);
+    this.pos = this.body.position;
     this.animationStates = [
       {
         name: "idle",
@@ -37,13 +39,13 @@ class Player {
     ];
   }
 
-  applyForce() {
-    let a = p5.Vector.div(this.gravity, this.mass);
-    this.acc.add(a);
-    this.vel.add(this.acc);
-    this.pos.add(this.vel);
-    this.acc.set(0, 0);
-  }
+  // applyForce() {
+  //   let a = p5.Vector.div(this.gravity, this.mass);
+  //   this.acc.add(a);
+  //   this.vel.add(this.acc);
+  //   this.pos.add(this.vel);
+  //   this.acc.set(0, 0);
+  // }
 
   getState() {
     this.animationStates.forEach((state, index) => {
@@ -89,7 +91,6 @@ class Player {
       this.pos.add(this.vel);
     }
     if (key === "space") {
-      
       let up = createVector(0, -1);
       this.vel.add(up);
       this.pos.add(this.vel);
@@ -100,19 +101,7 @@ class Player {
     }
   }
 
-  checkJump(boundary) {
-    console.log(this.pos.y, boundary.h, this.h);
-    // this.vy++;
-    // this.pos.add(0, this.vy);
-    
-    if (this.pos.y < boundary.h + 230) {
-      // this.stop()
-      let up = createVector(0, 1);
-      this.vel.add(up);
-      this.pos.add(this.vel);
-      
-    }
-  }
+  
 
   draw(img) {
     image(

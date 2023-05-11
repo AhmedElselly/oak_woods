@@ -1,3 +1,5 @@
+const { Engine, World, Bodies, Collision } = Matter;
+let engine, world;
 let groundImage;
 let charImage;
 let player;
@@ -8,13 +10,27 @@ let boundaries = [];
 let keys = {
   d: false,
   a: false,
-  space: false
-}
+  space: false,
+};
 
-let pressedKey = '';
+let pressedKey = "";
 
 for (let i = 0; i < collisions.length; i += 30) {
   collisionsMap.push(collisions.slice(i, i + 30));
+}
+
+function setup() {
+  createCanvas(720, 480);
+  engine = Engine.create();
+  world = engine.world;
+  collisionsMap.forEach((row, i) => {
+    row.forEach((source, j) => {
+      if (source === 316) {
+        boundaries.push(new Boundary(j * 24, i * 24));
+      }
+    });
+  });
+  player = new Player();
 }
 
 function preload() {
@@ -32,10 +48,9 @@ function rectangularCollision(rec1, rec2) {
 }
 
 function keyPressed() {
-  console.log(key)
   keys[key] = true;
-  if(key === ' ') {
-    pressedKey = 'space';
+  if (key === " ") {
+    pressedKey = "space";
   } else {
     pressedKey = key;
   }
@@ -43,20 +58,8 @@ function keyPressed() {
 
 function keyReleased() {
   keys[key] = false;
-  pressedKey = '';
-  player.applyForce()
-}
-
-function setup() {
-  createCanvas(720, 480);
-  collisionsMap.forEach((row, i) => {
-    row.forEach((source, j) => {
-      if (source === 316) {
-        boundaries.push(new Boundary(j * 24, i * 24));
-      }
-    });
-  });
-  player = new Player();
+  pressedKey = "";
+  // player.applyForce()
 }
 
 function draw() {
@@ -64,13 +67,15 @@ function draw() {
   image(groundImage, 0, 0);
   for (let boundary of boundaries) {
     if (rectangularCollision(player, boundary)) {
-      player.stop();
+      // player.stop();
+      console.log('collided')
     }
     boundary.draw();
-  }  
+  }
+  Engine.update(engine);
   player.movement(pressedKey);
   player.getState();
-  player.applyForce();
-  player.checkJump(boundaries[1]);
+  // player.applyForce();
+  // player.checkJump(boundaries[1]);
   player.draw(charImage);
 }
