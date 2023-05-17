@@ -11,15 +11,17 @@ class Player {
     this.maxFrame = 22;
     this.frameX = 0;
     this.frameY = 0;
-    this.speed = 0.2;
+    this.speed = 5;
     this.length = 6;
     this.charFrame = 0;
     this.staggerFrame = 5;
+    this.acc = 0.8;
     this.mass = 5;
+    this.force = createVector(0, 0);
+    this.speed = 0.5;
     this.vel = createVector(0, 0);
-    this.gravity = createVector(0, 0.8);
-    this.g = 0.5;
-    this.acc = createVector(0, 0);
+
+    
     this.spriteAnimations = [];
     this.animationStates = [
       {
@@ -62,50 +64,39 @@ class Player {
   }
 
   stop() {
-    this.gravity.set(0, 0);
     this.vel.set(0, 0);
+    this.g = 0;
   }
 
-  applyForce() {
-    // this.gravity.set(0, 0.8)
-    let a = p5.Vector.div(this.gravity, this.mass);
-    this.acc.add(a);
-    this.vel.add(this.acc);
-    this.pos.add(this.vel);
-    this.acc.set(0, 0);
-  }
-
-  grounded() {
-    let diffHeight = height - this.pos.y;
-    console.log({ diffHeight });
-    return this.pos.y === height - this.h;
-  }
-
-  jump() {
-    console.log(this.grounded());
-    // if (this.grounded()) {
-    this.vel.add(0, -8);
-    this.gravity.set(0, 1);
-    this.pos.add(this.vel);
-    this.vel.add(this.gravity);
-    this.pos.y = constrain(this.pos.y, 0, height - this.h);
+  edge(boundary) {
+    console.log(this.pos.y > boundary.pos.y)
+    // if (boundary) {
+      // if (this.pos.y > boundary.pos.y) {
+        this.pos.y = boundary.pos.y - boundary.h * 2;
+      // }
     // }
   }
 
+  applyForce(f) {
+    this.pos.add(f);
+  }
+
+  gravity() {
+    this.force.set(0, this.mass * this.acc);
+    this.vel.add(this.force);
+    this.applyForce(this.force);
+  }
+
+  jump() {
+    this.vel.y -= 40;
+  }
+
   movement(key) {
-    // console.log(this.gravity)
     if (key === "d") {
-      let speed = 0.5;
-      let right = createVector(speed, 0);
-      this.vel.add(right);
-      this.pos.add(this.vel);
-      // this.vel.set(0, 0)
+      this.pos.x += this.speed;
     }
     if (key === "a") {
-      let speed = 0.5;
-      let left = createVector(-speed, 0);
-      this.vel.add(left);
-      this.pos.add(this.vel);
+      this.pos.x -= this.speed;
     }
   }
 
@@ -119,6 +110,7 @@ class Player {
   }
 
   draw(img) {
+    console.log({ pos: this.pos.y });
     image(
       img,
       this.pos.x,

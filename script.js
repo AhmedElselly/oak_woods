@@ -45,16 +45,16 @@ function collided(rect1, rect2) {
   );
 }
 
-function detectCollisions(player, boundary) {
+function detectCollisions(rect1, rect2) {
   return (
-    player.pos.y + player.h < boundary.pos.y &&
-    player.pos.y + player.h + player.vel.y >= boundary.pos.y && 
-    player.pos.x + player.w >= boundary.pos.x 
+    rect1.pos.x < rect2.pos.x + rect2.w &&
+    rect1.pos.x + rect1.w > rect2.pos.x &&
+    rect1.pos.y < rect2.pos.y + rect2.h &&
+    rect1.pos.y + rect1.h + rect1.vel.y > rect2.pos.y
   )
 }
 
 function keyPressed() {
-  console.log(key);
   keys[key] = true;
   if (key === " ") {
     player.jump();
@@ -67,6 +67,9 @@ function keyReleased() {
   keys[key] = false;
   pressedKey = "";
   player.applyForce();
+  if(key === 'd' || key === 'a') {
+    player.stop()
+  }
 }
 
 function setup() {
@@ -74,7 +77,7 @@ function setup() {
   collisionsMap.forEach((row, i) => {
     row.forEach((source, j) => {
       if (source === 316) {
-        boundaries.push(new Boundary(j * 24, i * 24 + 1));
+        boundaries.push(new Boundary(j * 24, i * 24));
       }
     });
   });
@@ -86,18 +89,13 @@ function draw() {
   image(groundImage, 0, 0);
   for (let boundary of boundaries) {
     if (detectCollisions(player, boundary)) {
-      player.stop();
+      player.edge(boundary);
     } 
-    console.log(player.gravity)
-    // if(notCollided(player, boundary)) {
-    //   player.applyForce()
-    // }
     boundary.draw();
   }
   player.movement(pressedKey);
 
   player.getState();
-  player.applyForce();
-  // player.checkJump(boundaries[1]);
+  player.gravity();
   player.draw(charImage);
 }
